@@ -16,10 +16,11 @@ export interface LocationData {
 }
 
 export interface SensorData {
-  pm25: number
-  co2: number
-  temperature: number
-  humidity: number
+  temperature: number // °C
+  humidity: number // %
+  mq6: number // ppm (LPG/Propane)
+  co: number // ppm
+  dust: number // µg/m³
   timestamp: string
 }
 
