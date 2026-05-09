@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { MapPin } from "lucide-react"
@@ -35,11 +35,34 @@ function generateMockData(locationId: string): PollutantData {
 
 export default function DashboardPage() {
   const [selectedLocation, setSelectedLocation] = useState("anna-salai")
-  const [pollutantData, setPollutantData] = useState<PollutantData>(generateMockData("anna-salai"))
+  const [pollutantData, setPollutantData] = useState<PollutantData | null>(null)
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  useEffect(() => {
+    setPollutantData(generateMockData("anna-salai"))
+    setIsHydrated(true)
+  }, [])
 
   const handleLocationChange = (location: string) => {
     setSelectedLocation(location)
     setPollutantData(generateMockData(location))
+  }
+
+  if (!isHydrated) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-6 w-6 text-primary" />
+            <h1 className="text-3xl font-bold font-sans">Gas Detection Dashboard</h1>
+          </div>
+          <p className="text-muted-foreground">
+            Real-time monitoring of CO₂, NO₂, PM2.5, and PM10 levels across Chennai&apos;s high-traffic zones
+          </p>
+        </div>
+        <PollutantCardsSkeleton />
+      </div>
+    )
   }
 
   return (
@@ -57,7 +80,7 @@ export default function DashboardPage() {
       <LocationSelector selectedLocation={selectedLocation} onLocationChange={handleLocationChange} />
 
       <Suspense fallback={<PollutantCardsSkeleton />}>
-        <PollutantCards data={pollutantData} />
+        <PollutantCards data={pollutantData!} />
       </Suspense>
 
       <Suspense fallback={<Skeleton className="h-96" />}>
